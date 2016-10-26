@@ -3,9 +3,15 @@ if !filereadable(s:cmd)
   finish
 endif
 
+let s:template = {}
+
+function! s:template.stop()
+  call job_stop(self.job)
+endfunction
+
 function! clipboardwatcher#watch(cb)
-  if exists('s:job')
-    call job_stop(s:job)
-  endif
-  let s:job = job_start(s:cmd, { 'out_cb': a:cb, 'out_mode': 'nl' })
+  let ctx = copy(s:template)
+  let ctx['dir'] = a:dir
+  let ctx['job'] = job_start(s:cmd, { 'out_cb': a:cb, 'out_mode': 'json' })
+  return ctx
 endfunction
